@@ -77,13 +77,13 @@ class MainHandler(webapp2.RequestHandler):
             return True
     def valid_email(self, email):
         EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-        if not email = "":
+        if not email:
+            return True
+
+        if EMAIL_RE.match(email):
             return True
         else:
-            if EMAIL_RE.match(email):
-                return True
-            else:
-                return False
+            return False
     def post(self):
         username = self.request.get("username")
         user = self.valid_username(username)
