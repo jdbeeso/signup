@@ -76,10 +76,8 @@ class MainHandler(webapp2.RequestHandler):
         else:
             return True
     def valid_email(self, email):
-        if (email = ''):
-            return True
         EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-        if EMAIL_RE.match(email):
+        if EMAIL_RE.match(email) or email="":
             return True
         else:
             return False
