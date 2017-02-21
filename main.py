@@ -26,7 +26,7 @@ form = """
                </label>
 <br></br>
                <label>Password:
-               <input type='text' name='password' value=''>
+               <input type='password' name='password' value=''>
                <span style='color: red'>%(password_error)s</span>
                </label>
 <br></br>
@@ -76,6 +76,8 @@ class MainHandler(webapp2.RequestHandler):
         else:
             return True
     def valid_email(self, email):
+        if email = '':
+            return True
         EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
         if EMAIL_RE.match(email):
             return True
