@@ -42,69 +42,72 @@ form = """
 <br></br>
                <input type='submit'>
         </form>"""
-username_error=""
-password_error=""
-verify_error=""
-email_error=""
-errors = {'username_error': username_error, 'password_error': password_error, 'verify_error': verify_error, 'email_error': email_error}
+#username_error=""
+#password_error=""
+#verify_error=""
+#email_error=""
+#values = {'username':'username_error': username_error, 'password_error': password_error, 'verify_error': verify_error, 'email_error': email_error}
 #parameters = dict{"username": username, "passcode": passcode, 'verify': verify, 'email': email, 'username_error': username error, 'passcode_error': passcode_error, 'verify_error': verify_error, 'email_error': email_error}
 
 class MainHandler(webapp2.RequestHandler):
-    def write_form(self, username_error="", password_error="", verify_error="", email_error=""):
-        self.response.out.write(form % errors)
+    def write_form(self, username='', email='',username_error='', password_error='', verify_error='', email_error=''):
+        values = {'username': username, 'email': email, 'username_error': username_error, 'password_error': password_error, 'verify_error': verify_error, 'email_error': email_error}
+        self.response.out.write(form % values)
         #{"username_error": username_error, "password_error": password_error, "verify_error": verify_error, "email_error": email_error}
 
     def get(self):
         self.write_form()
 
-    def post(self):
+    def valid_username(self, username):
         USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-        def valid_username(username):
-            if USER_RE.match(username):
-                return True
-            else:
-                return False
-        PASS_RE = re.compile(r"^.{3,20}$")
-        def valid_password(password):
-            if PASS_RE.match(password):
-                return True
-            else:
-                return False
-        def valid_verify(verify, password):
-            if password != verify:
-                return False
-            else:
-                return True
-        EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
-        def valid_email(email):
-            if EMAIL_RE.match(email):
-                return True
-            else:
-                return False
-        username = self.request.get("username")
-        user = valid_username(self.request.get('username'))
-        password = valid_password(self.request.get('password'))
-        verify = valid_verify(self.request.get('verify'), self.request.get('password'))
-        email = valid_email(self.request.get('email'))
-        have_error = False
-        if not (user):
-            errors['username_error']="That's not a valid username"
-            have_error = True
-        elif not (password):
-            errors['password_error']='That is not a valid password'
-            have_error = True
-        elif not (verify):
-            errors['verify_error']='Those passwords do not match'
-            have_error = True
-        elif not (email):
-            errors['email_error']='That is not a valid email address'
-            have_error = True
-        elif (have_error):
-            self.write_form(errors)
+        if USER_RE.match(username):
+            return True
         else:
-            self.response.out.write("<h1>Welcome,&nbsp&nbsp" + username + "</h1>")
-    
-                                
+            return False
+    def valid_password(self, password):
+        PASS_RE = re.compile(r"^.{3,20}$")
+        if PASS_RE.match(password):
+            return True
+        else:
+            return False
+    def valid_verify(self, verify, password):
+        if password != verify:
+            return False
+        else:
+            return True
+    def valid_email(self, email):
+        EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
+        if EMAIL_RE.match(email):
+            return True
+        else:
+            return False
+    def post(self):
+        username = self.request.get("username")
+        user = self.valid_username(username)
+        password = self.valid_password(self.request.get('password'))
+        verify = self.valid_verify(self.request.get('verify'), self.request.get('password'))
+        email = self.valid_email(self.request.get('email'))
+        username_error=''
+        password_error=''
+        verify_error=''
+        email_error=''
+
+        if (user and password and verify and email):
+            return self.response.out.write("<h1>Welcome,&nbsp&nbsp" + username + "</h1>")
+        if not (user):
+            username_error="That's not a valid username"
+        if not (password):
+            password_error='That is not a valid password'
+        if not (verify):
+            verify_error='Those passwords do not match'
+        if not (email):
+            email_error='That is not a valid email address'
+        self.write_form(username, email, username_error, password_error, verify_error, email_error)
+
+
+            #self.response.out.write("<h1>Welcome,&nbsp&nbsp" + username + "</h1>")
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
 ], debug=True)
