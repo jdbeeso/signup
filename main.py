@@ -31,7 +31,7 @@ form = """
                </label>
 <br></br>
               <label>Verify:
-              <input type='text' name='verify' value=''>
+              <input type='password' name='verify' value=''>
               <span style='color: red'>%(verify_error)s</span>
               </label>
 <br></br>
